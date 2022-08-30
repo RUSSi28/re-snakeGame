@@ -1,0 +1,253 @@
+//フィールドの表示
+void setup(){
+    size(420,420);
+    background(100,200,100);
+    stroke(50,150,50);
+    for(int k = 0;k <= 420;k = k + 20){
+        line(k,0,k,height);
+        line(0,k,width,k);
+    }
+}
+
+
+
+
+//配列の初期化のための正誤etc
+    boolean raw = true;
+    boolean fed = false;
+    boolean gameStart = false;
+    int bodyParts = 6;
+    int addX = -20;
+    int addY = 0;
+    int feedX = (int)random(0,20)*20;
+    int feedY = (int)random(0,20)*20;
+    int timer = 4;
+//クラス型配列aの定義
+    snakeBody a[] = new snakeBody[100];
+    snakeBody b[] = new snakeBody[100];
+
+
+
+
+void draw(){
+  if(gameStart == false){
+    background(100,200,100);
+    fill(0);
+    textSize(60);
+    text("SNAKE GAME",20,50);
+    rect(50,100,40,40);
+    rect(20,150,40,40);
+    rect(70,150,40,40);
+    rect(50,200,40,40);
+    rect(50,270,40,40);
+    rect(50,320,40,80);
+    fill(255);
+    textSize(30);
+    text("W",55,130);
+    text("A",25,180);
+    text("S",75,180);
+    text("Z",55,230);
+    text("R",55,300);
+    fill(0);
+    text("W to UP",100,130);
+    text("A/S to LEFT/RIGHT",130,180);
+    text("Z to DOWN",100,230);
+    text("R to restart",100,300);
+    text("ENTER to start",100,350);
+    fill(255);
+    textSize(10);
+    text("ENTER",55,350);
+    fill(100,100,200);
+    rect(20,50,360,20);
+    rect(360,70,20,60);
+    fill(255);
+    rect(357,115,7,10);
+    rect(375,115,7,10);
+    fill(0);
+    rect(358,115,5,5);
+    rect(374,115,5,5);
+    fill(240,0,0);
+    ellipse(360,350,20,20);
+    fill(160,70,20);
+    rect(360,333,5,12);
+    line(0,250,300,250);
+    
+    
+    
+  }else{
+    if(timer > 0){
+        back();
+        frameRate(1);
+        timer = timer - 1;
+        textSize(100);
+        text(""+timer,180,180);
+    }
+
+    if(timer == 0){
+        frameRate(10);
+
+    //配列の初期化
+    if(raw == true){
+        for(int i = 0;i < 100;i ++){
+            a[i] = new snakeBody();
+        }
+        a[0].x = 220;
+        a[0].y = 220;
+    }
+
+
+
+    //フレームごとの画面初期化
+    back();
+
+    //蛇の体
+    for(int i = bodyParts;i > 0;i --){
+        a[i].x = a[i - 1].x;
+        a[i].y = a[i - 1].y;
+    }
+    for(int i = 0;i < bodyParts;i ++){
+        fill(50,50,150);
+        if(i == 0){
+            a[i].display();
+            fill(255);
+            rect(a[i].x - 5,a[i].y + 5,10,10);
+            rect(a[i].x + 15,a[i].y + 5,10,10); 
+            fill(0);
+            rect(a[i].x - 5,a[i].y + 5,5,5);
+            rect(a[i].x + 20,a[i].y + 5,5,5);
+        }else{
+            a[i].display();
+        }
+    }
+    raw = false;
+
+    //蛇の頭、蛇の身体を定義する上にあったものを下にすると治った
+    a[0].x = a[0].x + addX;
+    a[0].y = a[0].y + addY;
+
+
+
+    //操作＿使用キーa,w,s,z
+    direction();
+
+
+    //餌の表示
+    feed();
+
+
+    textSize(20);
+    fill(0);
+    text("score:"+bodyParts,320,20);
+
+    //ゲームオーバーの表示
+    if((a[0].x < -20)||(420 < a[0].x)||(a[0].y < -20)||(420 < a[0].y)){
+        background(255);
+        textSize(50);
+        text("GAME_OVER",70,200);
+        noLoop();
+    }
+
+    for(int i = 1;i < bodyParts;i ++){
+        if(((a[0].x == a[i].x) && (a[0].y == a[i].y)) && ((a[0].x != 220) && (a[0].y != 220))){
+            background(255);
+            textSize(50);
+            text("GAME_OVER",70,200);
+            noLoop();
+        }
+    }
+  }
+  }
+}
+
+
+
+
+//クラス生成
+class snakeBody{
+    int x,y;
+
+    //コンストラクタ
+    snakeBody(){
+        this.x = x;
+        this.y = y;
+    }
+    //メソッド
+    void display(){
+        rect(this.x,this.y,20,20);   
+    }
+}
+
+
+
+
+//フレームごとの背景初期化
+void back(){
+    background(100,200,100);
+    stroke(50,150,50);
+    for(int k = 0;k <= 420;k = k + 20){
+        line(k,0,k,height);
+        line(0,k,width,k);
+    }
+}
+
+
+
+
+//蛇の進む向きの変更
+void direction(){
+    if(keyPressed){
+        if(key == 'a'){
+            addX = -20;
+            addY = 0;
+        }else if(key == 's'){
+            addX = 20;
+            addY = 0;
+        }else if(key == 'w'){
+            addX = 0;
+            addY = -20;
+        }else if(key == 'z'){
+            addX = 0;
+            addY = 20;
+        }
+    }
+}
+
+
+
+void feed(){
+    if((a[0].x == feedX) &&(a[0].y == feedY)){
+        fed = true;
+        bodyParts = bodyParts + 1;
+    }
+    if(fed == true){
+        feedX = (int)random(0,20)*20;
+        feedY = (int)random(0,20)*20;
+        fed = false;
+    }
+    fill(255,0,0);
+    ellipseMode(CORNER);
+    ellipse(feedX,feedY,20,20);
+    fill(160,70,25);
+    rect(feedX + 10,feedY - 5,5,10);
+}
+
+
+
+void keyPressed(){
+    if(keyCode == ENTER){
+        gameStart = true;
+    }else if(key == 'r'){
+        //配列の初期化のための正誤etc
+        fed = false;
+        gameStart = false;
+        bodyParts = 6;
+        addX = -20;
+        addY = 0;
+        feedX = (int)random(0,20)*20;
+        feedY = (int)random(0,20)*20;
+        timer = 4;
+        a[0].x = 220;
+        a[0].y = 220;
+        loop();
+    }
+}
